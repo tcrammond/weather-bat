@@ -30,19 +30,18 @@ fn main() {
 
     let sunset = response["current"]["sunset"].as_i64();
     let temp = response["current"]["temp"].as_f64();
-    let humidity = response["current"]["humidity"].as_f64();
+    let _humidity = response["current"]["humidity"].as_f64();
     let weather = response["current"]["weather"][0]["description"].as_str();
     let weather_code = response["current"]["weather"][0]["id"].as_i64();
     let rain1h = response["current"]["rain"]["1h"].as_f64();
 
     let now: DateTime<Local> = Local::now();
 
-    // println!("{}", "Hello there".black().on_white());
-    println!("{}", print_left_and_right("🦇 Good day, delicious friend!", format!("🕰 It is {}", now.format("%a %b %e, %T").to_string()).as_str()).black().on_white());
+    println!("");
+    println!("{:^81}", "🦇 Good day, delicious friend!".black().on_white());
+    println!("{:^82}", "--------------------------------------------------------------------------------".black().on_white());
+    println!("{}", print_left_and_right(&format!("🌡️  The temperature outside is {:.2}°C ", to_c(temp.unwrap())), format!("🕐 It is {}", now.format("%a %b %e, %T").to_string()).as_str()).black().on_white());
 
-    if let Some(temp) = temp {
-        println!("🌡️  The temperature outside is {:.2}°C", to_c(temp));
-    }
 
     if let Some(weather) = weather {
         if let Some(weather_code) = weather_code {
@@ -53,26 +52,24 @@ fn main() {
                 Some(code) => code.1,
                 None => '🦇',
             };
-            println!("{}  We have {}", emoji, weather);
+            println!("{}", print_left_and_right(&format!("{} We have {}", emoji, weather), &format!("🌇 Sunset is at {}",
+            Utc.timestamp(sunset.unwrap(), 0).format("%T"))).black().on_white());
         } else {
-            println!("We have {}", weather);
+            println!("{}", print_left_and_right(&format!("{} We have {}", '🦇', weather), &format!("🌇 Sunset is at {}",
+            Utc.timestamp(sunset.unwrap(), 0).format("%T"))).black().on_white());
         }
     }
 
     if let Some(rain1h) = rain1h {
-        println!("☔ Grab a splendid umbrella, there is a {} chance of rain in the next hour", rain1h);
+        println!("{:^81}", format!("☔ Grab a splendid umbrella, there's a {} chance of rain in the next hour", rain1h).black().on_white());
     }
 
-    if let Some(humidity) = humidity {
-        println!("💦 Humidity is at {:.2}%", humidity);
-    }
+    println!("{:^82}", "--------------------------------------------------------------------------------".black().on_white());
+    println!("");
 
-    if let Some(sunset) = sunset {
-        println!(
-            "🌅 You can catch the sunset at {}",
-            Utc.timestamp(sunset, 0).format("%T")
-        );
-    }
+    // if let Some(humidity) = humidity {
+    //     println!("💦 Humidity is at {:.2}%", humidity);
+    // }
 }
 
 fn to_c(k: f64) -> f64 {
@@ -80,5 +77,5 @@ fn to_c(k: f64) -> f64 {
 }
 
 fn print_left_and_right (left: &str, right: &str) -> String {
-    format!("{}{:>40}", left, right)
+    format!(" {:<37} | {:>38} ", left, right)
 }
