@@ -4,25 +4,33 @@ use colored::Colorize;
 mod codes;
 
 fn main() {
+    let api_url = if cfg!(debug_assertions) {
+        "http://localhost:8888/.netlify/functions/get-weather"
+    } else {
+        "https://the-weather-bat.netlify.app/.netlify/functions/get-weather"
+    };
     let lat = std::env::var("LAT").expect("A latitude is required.");
     let lon = std::env::var("LON").expect("A longitude is required.");
 
-    let client = reqwest::blocking::Client::new();
-    let url = "http://localhost:8888/.netlify/functions/get-weather";
-
-    let response = client
-        .get(url)
+    let response = reqwest::blocking::Client::new()
+        .get(api_url)
         .query(&[("lat", lat), ("lon", lon)])
         .send();
 
     if let Err(_error) = response {
-        println!("{}", "🦇  Couldn't reach the weather service. Try again later?".red());
+        println!(
+            "{}",
+            "🦇  Couldn't reach the weather service. Try again later?".red()
+        );
         return;
     }
 
     let response = response.unwrap().json::<serde_json::Value>();
     if let Err(_error) = response {
-        println!("{}", "🦇  Couldn't figure out what the weather service said. Try again later?".red());
+        println!(
+            "{}",
+            "🦇  Couldn't figure out what the weather service said. Try again later?".red()
+        );
         return;
     }
 
@@ -38,10 +46,28 @@ fn main() {
     let now: DateTime<Local> = Local::now();
 
     println!("");
-    println!("{:^81}", "🦇 Good day, delicious friend!".black().on_white());
-    println!("{:^82}", "--------------------------------------------------------------------------------".black().on_white());
-    println!("{}", print_left_and_right(&format!("🌡️  The temperature outside is {:.2}°C ", to_c(temp.unwrap())), format!("🕐 It is {}", now.format("%a %b %e, %T").to_string()).as_str()).black().on_white());
-
+    println!(
+        "{:^81}",
+        "🦇 Good day, delicious friend!".black().on_white()
+    );
+    println!(
+        "{:^82}",
+        "--------------------------------------------------------------------------------"
+            .black()
+            .on_white()
+    );
+    println!(
+        "{}",
+        print_left_and_right(
+            &format!(
+                "🌡️  The temperature outside is {:.2}°C ",
+                to_c(temp.unwrap())
+            ),
+            format!("🕐 It is {}", now.format("%a %b %e, %T").to_string()).as_str()
+        )
+        .black()
+        .on_white()
+    );
 
     if let Some(weather) = weather {
         if let Some(weather_code) = weather_code {
@@ -52,19 +78,52 @@ fn main() {
                 Some(code) => code.1,
                 None => '🦇',
             };
-            println!("{}", print_left_and_right(&format!("{} We have {}", emoji, weather), &format!("🌇 Sunset is at {}",
-            Utc.timestamp(sunset.unwrap(), 0).format("%T"))).black().on_white());
+            println!(
+                "{}",
+                print_left_and_right(
+                    &format!("{} We have {}", emoji, weather),
+                    &format!(
+                        "🌇 Sunset is at {}",
+                        Utc.timestamp(sunset.unwrap(), 0).format("%T")
+                    )
+                )
+                .black()
+                .on_white()
+            );
         } else {
-            println!("{}", print_left_and_right(&format!("{} We have {}", '🦇', weather), &format!("🌇 Sunset is at {}",
-            Utc.timestamp(sunset.unwrap(), 0).format("%T"))).black().on_white());
+            println!(
+                "{}",
+                print_left_and_right(
+                    &format!("{} We have {}", '🦇', weather),
+                    &format!(
+                        "🌇 Sunset is at {}",
+                        Utc.timestamp(sunset.unwrap(), 0).format("%T")
+                    )
+                )
+                .black()
+                .on_white()
+            );
         }
     }
 
     if let Some(rain1h) = rain1h {
-        println!("{:^81}", format!("☔ Grab a splendid umbrella, there's a {} chance of rain in the next hour", rain1h).black().on_white());
+        println!(
+            "{:^81}",
+            format!(
+                "☔ Grab a splendid umbrella, there's a {} chance of rain in the next hour",
+                rain1h
+            )
+            .black()
+            .on_white()
+        );
     }
 
-    println!("{:^82}", "--------------------------------------------------------------------------------".black().on_white());
+    println!(
+        "{:^82}",
+        "--------------------------------------------------------------------------------"
+            .black()
+            .on_white()
+    );
     println!("");
 
     // if let Some(humidity) = humidity {
@@ -76,6 +135,6 @@ fn to_c(k: f64) -> f64 {
     k - 273.15
 }
 
-fn print_left_and_right (left: &str, right: &str) -> String {
+fn print_left_and_right(left: &str, right: &str) -> String {
     format!(" {:<37} | {:>38} ", left, right)
 }
