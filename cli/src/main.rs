@@ -45,17 +45,7 @@ fn main() {
 
     let now: DateTime<Local> = Local::now();
 
-    println!("");
-    println!(
-        "{:^81}",
-        "🦇 Good day, delicious friend!".black().on_white()
-    );
-    println!(
-        "{:^82}",
-        "--------------------------------------------------------------------------------"
-            .black()
-            .on_white()
-    );
+    print_heading();
     println!(
         "{}",
         print_left_and_right(
@@ -118,13 +108,7 @@ fn main() {
         );
     }
 
-    println!(
-        "{:^82}",
-        "--------------------------------------------------------------------------------"
-            .black()
-            .on_white()
-    );
-    println!("");
+    print_footer();
 
     // if let Some(humidity) = humidity {
     //     println!("💦 Humidity is at {:.2}%", humidity);
@@ -133,6 +117,30 @@ fn main() {
 
 fn to_c(k: f64) -> f64 {
     k - 273.15
+}
+
+fn print_heading() {
+    println!("");
+    println!(
+        "{:^81}",
+        "🦇 Good day, delicious friend!".black().on_white()
+    );
+    println!(
+        "{:^82}",
+        "--------------------------------------------------------------------------------"
+            .black()
+            .on_white()
+    );
+}
+
+fn print_footer () {
+    println!(
+        "{:^82}",
+        "--------------------------------------------------------------------------------"
+            .black()
+            .on_white()
+    );
+    println!("");
 }
 
 fn print_left_and_right(left: &str, right: &str) -> String {
