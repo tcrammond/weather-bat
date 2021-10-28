@@ -1,26 +1,18 @@
 use chrono::prelude::*;
 use colored::Colorize;
-use reqwest::header::USER_AGENT;
 
 mod codes;
 
 fn main() {
-    let api_token = std::env::var("WEATHER_KEY")
-        .expect("An OpenWeather API key is required. See https://openweathermap.org/.");
     let lat = std::env::var("LAT").expect("A latitude is required.");
     let lon = std::env::var("LON").expect("A longitude is required.");
 
-    // let mut arg_iterator = std::env::args();
-    // arg_iterator.next();
-    // let args: String = arg_iterator.collect();
-
     let client = reqwest::blocking::Client::new();
-    let url = "https://api.openweathermap.org/data/2.5/onecall";
+    let url = "http://localhost:8888/.netlify/functions/get-weather";
 
     let response = client
         .get(url)
-        .header(USER_AGENT, "tc-weather-bat")
-        .query(&[("appid", api_token), ("lat", lat), ("lon", lon)])
+        .query(&[("lat", lat), ("lon", lon)])
         .send();
 
     if let Err(_error) = response {
@@ -42,9 +34,10 @@ fn main() {
     let weather = response["current"]["weather"][0]["description"].as_str();
     let weather_code = response["current"]["weather"][0]["id"].as_i64();
     let rain1h = response["current"]["rain"]["1h"].as_f64();
-    dbg!( &response["current"]["rain"]);
+
     let now: DateTime<Local> = Local::now();
 
+    // println!("{}", "Hello there".black().on_white());
     println!("{}", print_left_and_right("🦇 Good day, delicious friend!", format!("🕰 It is {}", now.format("%a %b %e, %T").to_string()).as_str()).black().on_white());
 
     if let Some(temp) = temp {

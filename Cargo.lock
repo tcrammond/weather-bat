@@ -292,6 +292,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "get-weather"
+version = "0.1.0"
+dependencies = [
+ "aws_lambda_events",
+ "http",
+ "lambda_runtime",
+ "log",
+ "reqwest",
+ "simple_logger",
+ "tokio",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1217,18 +1230,6 @@ name = "wasm-bindgen-shared"
 version = "0.2.78"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0237232789cf037d5480773fe568aac745bfe2afbc11a863e97901780a6b47cc"
-
-[[package]]
-name = "weather-bat-api"
-version = "0.1.0"
-dependencies = [
- "aws_lambda_events",
- "http",
- "lambda_runtime",
- "log",
- "simple_logger",
- "tokio",
-]
 
 [[package]]
 name = "weather-bat-cli"
