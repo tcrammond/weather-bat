@@ -17,6 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: cargo build --release --verbose -p weather-bat-cli
+      run: cargo build --verbose -p weather-bat
     - name: Run tests
-      run: cargo test --verbose -p weather-bat-cli
+      run: cargo test --verbose -p weather-bat
