@@ -73,7 +73,7 @@ fn main() {
                 format!("{} We have {} ", emoji, weather),
                 format!(
                     "🌇 Sunset is at {}",
-                    Utc.timestamp(sunset.unwrap(), 0).format("%T")
+                    Utc.timestamp(sunset.unwrap(), 0).with_timezone(&Local).format("%T")
                 ),
             )
         } else {
@@ -81,7 +81,7 @@ fn main() {
                 format!("{} We have {}", '🦇', weather),
                 format!(
                     "🌇 Sunset is at {}",
-                    Utc.timestamp(sunset.unwrap(), 0).format("%T")
+                    Utc.timestamp(sunset.unwrap(), 0).with_timezone(&Local).format("%T")
                 ),
             )
         }
