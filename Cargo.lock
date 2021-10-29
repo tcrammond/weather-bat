@@ -1232,7 +1232,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0237232789cf037d5480773fe568aac745bfe2afbc11a863e97901780a6b47cc"
 
 [[package]]
-name = "weather-bat-cli"
+name = "weather-bat"
 version = "0.1.0"
 dependencies = [
  "chrono",

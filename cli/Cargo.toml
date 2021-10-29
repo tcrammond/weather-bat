@@ -1,5 +1,5 @@
 [package]
-name = "weather-bat-cli"
+name = "weather-bat"
 version = "0.1.0"
 authors = ["Tyler Crammond <tylerchc92@gmail.com>"]
 edition = "2018"
