@@ -41,22 +41,23 @@ fn main() {
     let _humidity = response["current"]["humidity"].as_f64();
     let weather = response["current"]["weather"][0]["description"].as_str();
     let weather_code = response["current"]["weather"][0]["id"].as_i64();
-    let rain1h = response["current"]["rain"]["1h"].as_f64();
+    let rain_expected = if let Some(hourly) = response["hourly"].as_array() {
+        // TODO: Haven't seen multiple weather entries but should iterate over it anyway.
+        let next = hourly[1]["weather"][0]["description"].as_str().unwrap();
+        next.contains("rain")
+    } else {
+        false
+    };
 
     let now: DateTime<Local> = Local::now();
 
     print_heading();
-    println!(
-        "{}",
-        print_left_and_right(
-            &format!(
-                "🌡️  The temperature outside is {:.2}°C ",
-                to_c(temp.unwrap())
-            ),
-            format!("🕐 It is {}", now.format("%a %b %e, %T").to_string()).as_str()
-        )
-        .black()
-        .on_white()
+    print_left_and_right(
+        format!(
+            "🌡️  The temperature outside is {:.2}°C ",
+            to_c(temp.unwrap())
+        ),
+        format!("🕐 It is {}", now.format("%a %b %e, %T").to_string()),
     );
 
     if let Some(weather) = weather {
@@ -68,43 +69,31 @@ fn main() {
                 Some(code) => code.1,
                 None => '🦇',
             };
-            println!(
-                "{}",
-                print_left_and_right(
-                    &format!("{} We have {}", emoji, weather),
-                    &format!(
-                        "🌇 Sunset is at {}",
-                        Utc.timestamp(sunset.unwrap(), 0).format("%T")
-                    )
-                )
-                .black()
-                .on_white()
-            );
+            print_left_and_right(
+                format!("{} We have {} ", emoji, weather),
+                format!(
+                    "🌇 Sunset is at {}",
+                    Utc.timestamp(sunset.unwrap(), 0).format("%T")
+                ),
+            )
         } else {
-            println!(
-                "{}",
-                print_left_and_right(
-                    &format!("{} We have {}", '🦇', weather),
-                    &format!(
-                        "🌇 Sunset is at {}",
-                        Utc.timestamp(sunset.unwrap(), 0).format("%T")
-                    )
-                )
-                .black()
-                .on_white()
-            );
+            print_left_and_right(
+                format!("{} We have {}", '🦇', weather),
+                format!(
+                    "🌇 Sunset is at {}",
+                    Utc.timestamp(sunset.unwrap(), 0).format("%T")
+                ),
+            )
         }
     }
 
-    if let Some(rain1h) = rain1h {
+    if rain_expected {
+        print_divider();
         println!(
-            "{:^81}",
-            format!(
-                "☔ Grab a splendid umbrella, there's a {} chance of rain in the next hour",
-                rain1h
-            )
-            .black()
-            .on_white()
+            "{:<81}",
+            " ☔ Grab a splendid umbrella, you can expect rain in the next hour."
+                .black()
+                .on_white()
         );
     }
 
@@ -119,30 +108,32 @@ fn to_c(k: f64) -> f64 {
     k - 273.15
 }
 
+fn print_divider() {
+    println!(
+        "{:^82}",
+        "--------------------------------------------------------------------------------"
+            .black()
+            .on_white()
+    );
+}
+
 fn print_heading() {
     println!("");
     println!(
         "{:^81}",
         "🦇 Good day, delicious friend!".black().on_white()
     );
-    println!(
-        "{:^82}",
-        "--------------------------------------------------------------------------------"
-            .black()
-            .on_white()
-    );
+    print_divider()
 }
 
-fn print_footer () {
-    println!(
-        "{:^82}",
-        "--------------------------------------------------------------------------------"
-            .black()
-            .on_white()
-    );
+fn print_footer() {
+    print_divider();
     println!("");
 }
 
-fn print_left_and_right(left: &str, right: &str) -> String {
-    format!(" {:<37} | {:>38} ", left, right)
+fn print_left_and_right(left: String, right: String) {
+    println!(
+        "{}",
+        format!(" {:<37} | {:>38} ", left, right).black().on_white()
+    );
 }
