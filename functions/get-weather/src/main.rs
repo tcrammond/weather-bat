@@ -37,7 +37,7 @@ pub(crate) async fn get_weather(
 
     let client = reqwest::Client::new();
     let weather_response = client
-        .get("https://api.openweathermap.org/data/2.5/onecall")
+        .get("http://api.openweathermap.org/data/2.5/onecall")
         .header(USER_AGENT, "the-weather-bat")
         .query(&[("appid", api_token), ("lat", lat.unwrap().to_owned()), ("lon", lon.unwrap().to_owned())])
         .send().await?;
