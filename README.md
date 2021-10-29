@@ -6,6 +6,8 @@ A delightful little command to display your local weather, as retrieved from [Op
 
 ## Installation
 
+Requirements: [Rust](https://doc.rust-lang.org/book/ch01-01-installation.html)
+
 You'll need to build the binary first:
 
 ```shell
