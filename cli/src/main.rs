@@ -1,16 +1,18 @@
 use colored::Colorize;
+use weather_bat::WeatherBatError;
 
 mod codes;
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), WeatherBatError> {
     let lat = std::env::var("LAT").expect("A latitude is required.");
     let lon = std::env::var("LON").expect("A longitude is required.");
 
-    let weather_result = weather_bat::summon_the_weather_bat(lat, lon);
+    let weather_result = weather_bat::summon_the_weather_bat(lat, lon).await;
 
     if let Err(err) = weather_result {
         println!("{}", err);
-        return;
+        return Err(err);
     }
 
     let weather = weather_result.unwrap();
@@ -25,6 +27,7 @@ fn main() {
     }
 
     print_footer();
+    Ok(())
 }
 
 fn print_divider() {

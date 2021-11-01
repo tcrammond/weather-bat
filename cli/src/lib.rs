@@ -29,25 +29,37 @@ impl Display for WeatherBatError {
     }
 }
 
-pub fn summon_the_weather_bat(lat: String, lon: String) -> Result<WeatherResult, WeatherBatError> {
+pub async fn summon_the_weather_bat(
+    lat: String,
+    lon: String,
+) -> Result<WeatherResult, WeatherBatError> {
     let api_url = if cfg!(debug_assertions) {
         "http://localhost:8888/.netlify/functions/get-weather"
     } else {
         "https://the-weather-bat.netlify.app/.netlify/functions/get-weather"
     };
 
-    let response = reqwest::blocking::Client::new()
+    let http_client = reqwest::Client::builder().build().unwrap();
+    let request = http_client
         .get(api_url)
-        .query(&[("lat", lat), ("lon", lon)])
-        .send();
+        .query(&[("lat", lat), ("lon", lon)]);
 
-    if let Err(_error) = response {
-        return Err(WeatherBatError::Network);
+    let response = match request.send().await {
+        Err(_) => Err(WeatherBatError::Network),
+        Ok(response) => Ok(response),
+    };
+
+    if let Err(err) = response {
+        return Err(err);
     }
 
-    let response = response.unwrap().json::<serde_json::Value>();
-    if let Err(_error) = response {
-        return Err(WeatherBatError::Unknown);
+    let response = match response.unwrap().json::<serde_json::Value>().await {
+        Err(_) => Err(WeatherBatError::Unknown),
+        Ok(response) => Ok(response),
+    };
+
+    if let Err(err) = response {
+        return Err(err);
     }
 
     let response = response.unwrap();
